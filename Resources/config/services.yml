@@ -1,0 +1,35 @@
+services:
+
+    jbbcode.default_code_definition_set:
+        class: 'JBBCode\DefaultCodeDefinitionSet'
+
+    jbbcode.parser:
+        class: 'JBBCode\Parser'
+        calls:
+            - ['addCodeDefinitionSet', ['@jbbcode.default_code_definition_set']]
+
+    madforwebs_form.form_transformer.bbcode_transformer:
+        class: 'MadForWebs\FormBundle\Form\Transformer\BBcodeTransformer'
+        arguments: ['@jbbcode.parser']
+
+    madforwebs_form.form_type.text_area_bbcode_type:
+        class: 'MadForWebs\FormBundle\Form\Type\TextAreaBBCodeType'
+        arguments: ['@madforwebs_form.form_transformer.bbcode_transformer']
+        tags:
+            - { name: 'form.type' }
+
+    madforwebs_form.transformer.html_purifier:
+        class: 'Exercise\HTMLPurifierBundle\Form\HTMLPurifierTransformer'
+        arguments: ['@exercise_html_purifier.default']
+
+    madforwebs_form.form_type.text_area_html_type:
+        class: 'MadForWebs\FormBundle\Form\Type\TextAreaHtmlType'
+        arguments: ['@madforwebs_form.transformer.html_purifier']
+        tags:
+            - { name: 'form.type' }
+
+    madforwebs_form.form_type.entity_hidden_type:
+        class: 'MadForWebs\FormBundle\Form\Type\EntityHiddenType'
+        arguments: ['@doctrine.orm.entity_manager']
+        tags:
+            - { name: 'form.type' }
